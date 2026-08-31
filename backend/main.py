@@ -158,7 +158,97 @@ def get_metrics():
             2
         )
     }
+@app.get("/load-balancer")
+def get_load_balancer():
+    server_data = []
 
+    for server in servers:
+        utilization = server.get_utilization()
+
+        cpu = utilization["cpu_utilization"]
+        ram = utilization["ram_utilization"]
+
+        load_score = round((cpu + ram) / 2, 2)
+
+        server_data.append({
+            "name": server.name,
+            "cpu_utilization": cpu,
+            "ram_utilization": ram,
+            "load_score": load_score,
+            "active_vms": len(server.vms)
+        })
+
+    return {
+        "strategy": "least_loaded",
+        "servers": server_data
+    }
+@app.get("/auto-scaling")
+def get_auto_scaling():
+
+    auto_scaler = scheduler.auto_scaler
+
+    cpu_values = []
+    ram_values = []
+
+    for server in servers:
+
+        utilization = server.get_utilization()
+
+        cpu_values.append(
+            utilization["cpu_utilization"]
+        )
+
+        ram_values.append(
+            utilization["ram_utilization"]
+        )
+
+    average_cpu = (
+        sum(cpu_values) / len(cpu_values)
+        if cpu_values else 0
+    )
+
+    average_ram = (
+        sum(ram_values) / len(ram_values)
+        if ram_values else 0
+    )
+
+    scaling_needed = (
+        auto_scaler.should_scale_up()
+    )
+
+    return {
+        "enabled": True,
+
+        "current_servers": len(servers),
+
+        "minimum_servers":
+            auto_scaler.MIN_SERVERS,
+
+        "maximum_servers":
+            auto_scaler.MAX_SERVERS,
+
+        "cpu_threshold":
+            auto_scaler.CPU_SCALE_THRESHOLD,
+
+        "ram_threshold":
+            auto_scaler.RAM_SCALE_THRESHOLD,
+
+        "average_cpu":
+            round(average_cpu, 2),
+
+        "average_ram":
+            round(average_ram, 2),
+
+        "scaling_needed":
+            scaling_needed,
+
+        "scale_up_events":
+            auto_scaler.scale_up_events,
+
+        "scale_up_enabled": True,
+
+        "scale_down_enabled": False
+    }
 @app.get("/ec2/instances")
 def get_ec2_instances():
     return {

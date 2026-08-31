@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Load Balancer — CloudLab</title>
+
+    <link rel="stylesheet" href="management.css">
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <div class="logo">
+        <div class="logo-mark">C</div>
+        CLOUDLAB
+    </div>
+
+    <nav>
+        <a href="index.html">Simulator</a>
+        <a href="ec2.html">EC2</a>
+        <a href="load_balancer.html" class="active">
+            Load Balancer
+        </a>
+        <a href="auto_scaling.html">
+            Auto Scaling
+        </a>
+    </nav>
+
+    <div class="status">
+        <span></span>
+        API ONLINE
+    </div>
+
+</header>
+
+
+<main class="page">
+
+    <section class="page-hero">
+
+        <div class="page-tag">
+            TRAFFIC MANAGEMENT
+        </div>
+
+        <h1>
+            Load <span>Balancer</span>
+        </h1>
+
+        <p>
+            Monitor server load and distribute incoming
+            VM workloads using the least-loaded strategy.
+        </p>
+
+    </section>
+
+
+    <section class="stats">
+
+        <div class="stat">
+            <span>STRATEGY</span>
+            <strong id="strategy">—</strong>
+        </div>
+
+        <div class="stat">
+            <span>SERVERS</span>
+            <strong id="serverCount">—</strong>
+        </div>
+
+        <div class="stat">
+            <span>ACTIVE VMS</span>
+            <strong id="vmCount">—</strong>
+        </div>
+
+        <div class="stat">
+            <span>AVERAGE LOAD</span>
+            <strong id="averageLoad">—</strong>
+        </div>
+
+    </section>
+
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <span>SERVER POOL</span>
+
+            <h2>
+                Current infrastructure load
+            </h2>
+
+        </div>
+
+
+        <div
+            id="serverGrid"
+            class="server-grid"
+        ></div>
+
+    </section>
+
+</main>
+
+
+
+
+
+<script src="load_balancer.js"></script>
+
+</body>
+</html>

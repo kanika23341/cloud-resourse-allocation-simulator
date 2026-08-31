@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Auto Scaling — CloudLab</title>
+
+    <link
+        rel="stylesheet"
+        href="management.css"
+    >
+
+</head>
+
+
+<body>
+
+<header class="navbar">
+
+    <div class="logo">
+
+        <div class="logo-mark">
+            C
+        </div>
+
+        CLOUDLAB
+
+    </div>
+
+
+    <nav>
+
+        <a href="index.html">
+            Simulator
+        </a>
+
+        <a href="ec2.html">
+            EC2
+        </a>
+
+        <a href="load_balancer.html">
+            Load Balancer
+        </a>
+
+        <a
+            href="auto_scaling.html"
+            class="active"
+        >
+            Auto Scaling
+        </a>
+
+    </nav>
+
+
+    <div class="status">
+
+        <span></span>
+
+        API ONLINE
+
+    </div>
+
+</header>
+
+
+<main class="page">
+
+    <section class="page-hero">
+
+        <div class="page-tag">
+            DYNAMIC INFRASTRUCTURE
+        </div>
+
+        <h1>
+            Auto <span>Scaling</span>
+        </h1>
+
+        <p>
+            Dynamically expand the simulated cloud
+            infrastructure when existing server capacity
+            cannot satisfy incoming workloads.
+        </p>
+
+    </section>
+
+
+    <section class="stats">
+
+        <div class="stat">
+
+            <span>STATUS</span>
+
+            <strong id="status">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>CURRENT SERVERS</span>
+
+            <strong id="currentServers">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>MIN SERVERS</span>
+
+            <strong id="minimumServers">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>MAX SERVERS</span>
+
+            <strong id="maximumServers">
+                —
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <span>SCALING POLICY</span>
+
+            <h2>
+                Infrastructure configuration
+            </h2>
+
+        </div>
+
+
+        <div class="scaling-card">
+
+            <div class="scaling-grid">
+
+                <div class="setting">
+
+                    <span>
+                        SCALE UP
+                    </span>
+
+                    <strong id="scaleUp">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="setting">
+
+                    <span>
+                        SCALE DOWN
+                    </span>
+
+                    <strong id="scaleDown">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="setting">
+
+                    <span>
+                        CURRENT CAPACITY
+                    </span>
+
+                    <strong id="capacity">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="setting">
+
+                    <span>
+                        SERVER POOL
+                    </span>
+
+                    <strong>
+                        Dynamic
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="badge">
+                AUTO SCALING ENABLED
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+
+
+
+<script src="auto_scaling.js"></script>
+
+</body>
+
+</html>
