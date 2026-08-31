@@ -5,17 +5,11 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>CloudLab — Build Your VM</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -201,12 +195,7 @@
                             Give it a name
                         </label>
 
-                        <input
-                            id="vmName"
-                            type="text"
-                            placeholder="my-web-server"
-                            required
-                        >
+                        <input id="vmName" type="text" placeholder="my-web-server" required>
 
                     </div>
 
@@ -222,13 +211,7 @@
 
                             <div class="input-with-unit">
 
-                                <input
-                                    id="cpu"
-                                    type="number"
-                                    min="1"
-                                    placeholder="4"
-                                    required
-                                >
+                                <input id="cpu" type="number" min="1" placeholder="4" required>
 
                                 <span>
                                     cores
@@ -247,13 +230,7 @@
 
                             <div class="input-with-unit">
 
-                                <input
-                                    id="ram"
-                                    type="number"
-                                    min="1"
-                                    placeholder="8"
-                                    required
-                                >
+                                <input id="ram" type="number" min="1" placeholder="8" required>
 
                                 <span>
                                     GB
@@ -275,14 +252,7 @@
 
                         <div class="duration-row">
 
-                            <input
-                                id="duration"
-                                type="number"
-                                min="0.5"
-                                step="0.5"
-                                placeholder="5"
-                                required
-                            >
+                            <input id="duration" type="number" min="0.5" step="0.5" placeholder="5" required>
 
                             <span>
                                 hours
@@ -309,17 +279,16 @@
                             <option value="first_fit">
                                 First Fit — use the first available
                             </option>
-
+                            <option value="least_loaded">
+                                Least Loaded
+                            </option>
                         </select>
 
                     </div>
 
 
 
-                    <button
-                        class="build-button"
-                        type="submit"
-                    >
+                    <button class="build-button" type="submit">
 
                         <span>
                             Find my VM a home
@@ -355,10 +324,7 @@
                 </div>
 
 
-                <div
-                    id="allocationResult"
-                    class="result-content"
-                >
+                <div id="allocationResult" class="result-content">
 
                     <div class="waiting">
 
@@ -385,10 +351,7 @@
 
         </section>
 
-        <section
-            id="servers"
-            class="servers-section"
-        >
+        <section id="servers" class="servers-section">
 
             <div class="section-title-row">
 
@@ -405,10 +368,7 @@
                 </div>
 
 
-                <button
-                    id="resetButton"
-                    class="reset"
-                >
+                <button id="resetButton" class="reset">
                     Reset playground
                 </button>
 
@@ -421,10 +381,7 @@
             </p>
 
 
-            <div
-                id="serverGrid"
-                class="server-grid"
-            >
+            <div id="serverGrid" class="server-grid">
 
             </div>
 
@@ -435,10 +392,7 @@
 
         <!-- INSIGHTS -->
 
-        <section
-            id="analytics"
-            class="insights"
-        >
+        <section id="analytics" class="insights">
 
             <div class="insight-card">
 
@@ -467,10 +421,7 @@
 
                     <div class="track">
 
-                        <div
-                            id="cpuBar"
-                            class="fill"
-                        ></div>
+                        <div id="cpuBar" class="fill"></div>
 
                     </div>
 
@@ -493,10 +444,7 @@
 
                     <div class="track">
 
-                        <div
-                            id="ramBar"
-                            class="fill"
-                        ></div>
+                        <div id="ramBar" class="fill"></div>
 
                     </div>
 

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from models import VMRequest, Server
 from ec2_instances import EC2_INSTANCE_TYPES
-
+from scheduler import Scheduler
 app = FastAPI(
     title="Cloud Resource Allocation Simulator",
     description="Simulates VM allocation across cloud servers.",
@@ -27,50 +27,7 @@ def create_servers():
 
 
 servers = create_servers()
-
-def first_fit(vm: VMRequest):
-    for server in servers:
-
-        if server.can_allocate(vm):
-            return server
-
-    return None
-
-
-def best_fit(vm: VMRequest):
-
-    suitable_servers = []
-
-    for server in servers:
-
-        if server.can_allocate(vm):
-            suitable_servers.append(server)
-
-    if not suitable_servers:
-        return None
-
-    def remaining_resources(server):
-
-        remaining_cpu = server.available_cpu - vm.cpu
-        remaining_ram = server.available_ram - vm.ram
-
-        return remaining_cpu + remaining_ram
-
-    return min(
-        suitable_servers,
-        key=remaining_resources
-    )
-
-
-def select_server(vm: VMRequest):
-
-    if vm.algorithm == "first_fit":
-        return first_fit(vm)
-
-    if vm.algorithm == "best_fit":
-        return best_fit(vm)
-
-    return best_fit(vm)
+scheduler = Scheduler(servers)
 
 @app.get("/")
 def home():
@@ -94,7 +51,7 @@ def get_servers():
 @app.post("/allocate")
 def allocate_vm(vm: VMRequest):
 
-    selected_server = select_server(vm)
+    selected_server = scheduler.schedule(vm)
 
     if selected_server is None:
 
@@ -138,10 +95,10 @@ def allocate_vm(vm: VMRequest):
 @app.post("/reset")
 def reset_simulation():
 
-    global servers
+    global servers,scheduler
 
     servers = create_servers()
-
+    scheduler=Scheduler(servers)
     return {
         "success": True,
         "message": "Simulation reset successfully."
