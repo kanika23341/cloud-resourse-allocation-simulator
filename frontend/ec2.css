@@ -1,0 +1,735 @@
+
+/* =====================================================
+   CLOUDLAB — EC2 SIMULATOR
+   Dark / cinematic / minimal
+   ===================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --background: #090909;
+    --surface: #111111;
+    --surface-light: #171717;
+    --border: #252525;
+
+    --text: #f5f5f5;
+    --muted: #8d8d8d;
+
+    --red: #e50914;
+    --red-dark: #b20710;
+
+    --green: #46d369;
+
+    --radius: 10px;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--background);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    letter-spacing: -0.01em;
+}
+
+
+/* =====================================================
+   NAVBAR
+   ===================================================== */
+
+.navbar {
+    height: 68px;
+    padding: 0 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: rgba(9, 9, 9, 0.96);
+    border-bottom: 1px solid var(--border);
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.brand-mark {
+    width: 29px;
+    height: 29px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--red);
+    color: white;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    border-radius: 5px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.nav-links a {
+    color: #858585;
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition:
+        color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: #ffffff;
+}
+
+.nav-links a.active {
+    color: #ffffff;
+}
+
+
+/* =====================================================
+   MAIN
+   ===================================================== */
+
+main {
+    width: min(1180px, 90%);
+    margin: auto;
+}
+
+
+/* =====================================================
+   HERO
+   ===================================================== */
+
+.hero {
+    min-height: 300px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 65px 0 50px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.hero-content {
+    max-width: 650px;
+}
+
+.eyebrow {
+    margin-bottom: 14px;
+
+    color: var(--red);
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 0.18em;
+}
+
+.hero h1 {
+    font-size: clamp(42px, 6vw, 68px);
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+    font-weight: 800;
+}
+
+.hero h1 span {
+    color: #777777;
+}
+
+.hero-description {
+    max-width: 570px;
+
+    margin-top: 22px;
+
+    color: var(--muted);
+
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.hero-stat {
+    min-width: 150px;
+
+    padding-left: 30px;
+
+    border-left: 1px solid var(--border);
+}
+
+.hero-stat span {
+    display: block;
+
+    color: #666666;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.14em;
+}
+
+.hero-stat strong {
+    display: block;
+
+    margin-top: 8px;
+
+    font-size: 42px;
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   FILTERS
+   ===================================================== */
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 28px 0;
+}
+
+.filter {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+
+    background: transparent;
+    color: #858585;
+
+    padding: 9px 15px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.filter:hover {
+    color: white;
+    border-color: #444444;
+}
+
+.filter.active {
+    background: var(--red);
+    border-color: var(--red);
+
+    color: white;
+}
+
+
+/* =====================================================
+   INSTANCE GRID
+   ===================================================== */
+
+.instance-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 14px;
+
+    padding-bottom: 70px;
+}
+
+.instance-card {
+    min-height: 245px;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 22px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    position: relative;
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.instance-card::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 2px;
+
+    background: var(--red);
+
+    transform: scaleX(0);
+    transform-origin: left;
+
+    transition:
+        transform 0.25s ease;
+}
+
+.instance-card:hover {
+    transform: translateY(-3px);
+
+    background: var(--surface-light);
+
+    border-color: #383838;
+}
+
+.instance-card:hover::after {
+    transform: scaleX(1);
+}
+
+.instance-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.category {
+    color: #777777;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.instance-dot {
+    width: 7px;
+    height: 7px;
+
+    background: var(--green);
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 8px rgba(70, 211, 105, 0.45);
+}
+
+.instance-card h3 {
+    margin-top: 30px;
+
+    font-size: 27px;
+    font-weight: 700;
+
+    letter-spacing: -0.04em;
+}
+
+
+/* =====================================================
+   RESOURCE AREA
+   ===================================================== */
+
+.resources {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    margin-top: 28px;
+}
+
+.resources div {
+    padding-right: 10px;
+
+    border-right: 1px solid var(--border);
+}
+
+.resources div:last-child {
+    border-right: none;
+    padding-left: 10px;
+}
+
+.resources span {
+    display: block;
+
+    color: #666666;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.resources strong {
+    display: block;
+
+    margin-top: 6px;
+
+    font-size: 19px;
+}
+
+
+/* =====================================================
+   CARD FOOTER
+   ===================================================== */
+
+.instance-bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.instance-bottom span {
+    display: block;
+
+    color: #666666;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.13em;
+}
+
+.instance-bottom strong {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 15px;
+}
+
+.instance-bottom button {
+    padding: 8px 11px;
+
+    border: 1px solid #333333;
+    border-radius: 4px;
+
+    background: transparent;
+    color: #dddddd;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.instance-bottom button:hover {
+    background: var(--red);
+    border-color: var(--red);
+    color: white;
+}
+
+
+/* =====================================================
+   CALCULATOR
+   ===================================================== */
+
+.calculator {
+    margin-bottom: 80px;
+
+    padding: 42px;
+
+    background: #0e0e0e;
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.calculator::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 1px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--red),
+        transparent
+    );
+}
+
+.calculator-heading h2 {
+    font-size: 31px;
+
+    letter-spacing: -0.04em;
+}
+
+.calculator-content {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 70px;
+
+    margin-top: 35px;
+}
+
+.calculator-input {
+    display: grid;
+
+    grid-template-columns:
+        1fr;
+
+    gap: 9px;
+}
+
+.calculator-input label {
+    margin-top: 8px;
+
+    color: #777777;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.calculator-input select,
+.calculator-input input {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    background: #151515;
+    color: #eeeeee;
+
+    border: 1px solid #292929;
+    border-radius: 5px;
+
+    outline: none;
+
+    font-size: 13px;
+
+    transition:
+        border-color 0.2s ease;
+}
+
+.calculator-input select:focus,
+.calculator-input input:focus {
+    border-color: #555555;
+}
+
+
+/* =====================================================
+   COST DISPLAY
+   ===================================================== */
+
+.cost-display {
+    min-height: 180px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding-left: 45px;
+
+    border-left: 1px solid var(--border);
+}
+
+.cost-display span {
+    color: #666666;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 0.15em;
+}
+
+.cost-display strong {
+    margin-top: 8px;
+
+    font-size: 50px;
+
+    letter-spacing: -0.05em;
+}
+
+.cost-display p {
+    margin-top: 8px;
+
+    color: #777777;
+
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   LOADING / ERROR
+   ===================================================== */
+
+.loading,
+.error-state {
+    grid-column: 1 / -1;
+
+    min-height: 220px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    border: 1px dashed #292929;
+    border-radius: 10px;
+
+    color: #777777;
+
+    text-align: center;
+}
+
+.error-state h3 {
+    margin-bottom: 8px;
+
+    color: #dddddd;
+
+    font-size: 17px;
+}
+
+.error-state p {
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 1000px) {
+
+    .instance-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .hero {
+        padding-top: 45px;
+    }
+
+}
+
+
+@media (max-width: 720px) {
+
+    .navbar {
+        padding: 0 5%;
+    }
+
+    .nav-links {
+        gap: 15px;
+    }
+
+    .nav-links a {
+        font-size: 11px;
+    }
+
+    .hero {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 35px;
+    }
+
+    .hero-stat {
+        padding-left: 0;
+
+        border-left: none;
+        border-top: 1px solid var(--border);
+
+        padding-top: 20px;
+    }
+
+    .instance-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .controls {
+        overflow-x: auto;
+        padding-bottom: 20px;
+    }
+
+    .filter {
+        white-space: nowrap;
+    }
+
+    .calculator {
+        padding: 28px 22px;
+    }
+
+    .calculator-content {
+        grid-template-columns: 1fr;
+        gap: 35px;
+    }
+
+    .cost-display {
+        padding-left: 0;
+
+        border-left: none;
+        border-top: 1px solid var(--border);
+
+        padding-top: 30px;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .nav-links {
+        gap: 10px;
+    }
+
+    .nav-links a:nth-child(3),
+    .nav-links a:nth-child(4) {
+        display: none;
+    }
+
+    .hero h1 {
+        font-size: 45px;
+    }
+
+    main {
+        width: 90%;
+    }
+
+}

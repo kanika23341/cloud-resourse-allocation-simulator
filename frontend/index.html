@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CloudLab — Build Your VM</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">
+
+            <span class="logo-mark">
+                C
+            </span>
+
+            <span>
+                CloudLab
+            </span>
+
+        </div>
+
+
+        <nav>
+
+            <a href="#build">
+                Build
+            </a>
+
+            <a href="#servers">
+                Servers
+            </a>
+
+            <a href="#analytics">
+                Insights
+            </a>
+            <a href="ec2.html">
+                EC2 Instances
+            </a>
+
+        </nav>
+
+
+        <div class="status">
+
+            <span></span>
+
+            Simulation running
+
+        </div>
+
+    </header>
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="hero-tag">
+                CLOUD RESOURCE PLAYGROUND
+            </span>
+
+            <h1>
+                Give your VM
+                <span>a home.</span>
+            </h1>
+
+            <p>
+                Configure a virtual machine and let our
+                scheduler figure out where it belongs.
+            </p>
+
+        </div>
+
+
+        <div class="hero-decoration">
+
+            <div class="cloud cloud-one"></div>
+
+            <div class="cloud cloud-two"></div>
+
+            <div class="server-orbit">
+
+                <div class="orbit-dot"></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="quick-stats">
+
+        <div class="stat">
+
+            <span>
+                RUNNING VMs
+            </span>
+
+            <strong id="activeVMs">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>
+                CPU USED
+            </span>
+
+            <strong id="cpuUtilization">
+                0%
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>
+                RAM USED
+            </span>
+
+            <strong id="ramUtilization">
+                0%
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>
+                HOURLY COST
+            </span>
+
+            <strong id="hourlyCost">
+                Rs.0.00
+            </strong>
+
+        </div>
+
+    </section>
+
+    <main id="build" class="content">
+
+        <section class="build-layout">
+
+            <div class="builder">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span>
+                            STEP 01
+                        </span>
+
+                        <h2>
+                            Build your VM
+                        </h2>
+
+                    </div>
+
+                    <div class="step-circle">
+                        01
+                    </div>
+
+                </div>
+
+
+                <p class="helper-text">
+                    Tell us what your application needs.
+                    We'll take care of the placement.
+                </p>
+
+
+                <form id="vmForm">
+
+
+                    <div class="input-group">
+
+                        <label for="vmName">
+                            Give it a name
+                        </label>
+
+                        <input
+                            id="vmName"
+                            type="text"
+                            placeholder="my-web-server"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <div class="resource-selection">
+
+                        <div class="resource-input">
+
+                            <label for="cpu">
+                                CPU
+                            </label>
+
+                            <div class="input-with-unit">
+
+                                <input
+                                    id="cpu"
+                                    type="number"
+                                    min="1"
+                                    placeholder="4"
+                                    required
+                                >
+
+                                <span>
+                                    cores
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="resource-input">
+
+                            <label for="ram">
+                                Memory
+                            </label>
+
+                            <div class="input-with-unit">
+
+                                <input
+                                    id="ram"
+                                    type="number"
+                                    min="1"
+                                    placeholder="8"
+                                    required
+                                >
+
+                                <span>
+                                    GB
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="input-group">
+
+                        <label for="duration">
+                            How long will it run?
+                        </label>
+
+                        <div class="duration-row">
+
+                            <input
+                                id="duration"
+                                type="number"
+                                min="0.5"
+                                step="0.5"
+                                placeholder="5"
+                                required
+                            >
+
+                            <span>
+                                hours
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="algorithm-choice">
+
+                        <label>
+                            How should we choose a server?
+                        </label>
+
+                        <select id="algorithm">
+
+                            <option value="best_fit">
+                                Best Fit — pack efficiently
+                            </option>
+
+                            <option value="first_fit">
+                                First Fit — use the first available
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <button
+                        class="build-button"
+                        type="submit"
+                    >
+
+                        <span>
+                            Find my VM a home
+                        </span>
+
+                        <span class="button-arrow">
+                            →
+                        </span>
+
+                    </button>
+
+
+                </form>
+
+            </div>
+
+
+
+            <!-- RESULT -->
+
+            <div class="result-card">
+
+                <div class="result-top">
+
+                    <span>
+                        STEP 02
+                    </span>
+
+                    <div class="step-circle">
+                        02
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="allocationResult"
+                    class="result-content"
+                >
+
+                    <div class="waiting">
+
+                        <div class="waiting-icon">
+                            +
+                        </div>
+
+                        <h3>
+                            Waiting for a VM
+                        </h3>
+
+                        <p>
+                            Your server assignment will
+                            appear here once you submit
+                            a request.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+        <section
+            id="servers"
+            class="servers-section"
+        >
+
+            <div class="section-title-row">
+
+                <div>
+
+                    <span>
+                        YOUR CLOUD
+                    </span>
+
+                    <h2>
+                        Server playground
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="resetButton"
+                    class="reset"
+                >
+                    Reset playground
+                </button>
+
+            </div>
+
+
+            <p class="section-description">
+                Watch your resources move around the cluster
+                as you create virtual machines.
+            </p>
+
+
+            <div
+                id="serverGrid"
+                class="server-grid"
+            >
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- INSIGHTS -->
+
+        <section
+            id="analytics"
+            class="insights"
+        >
+
+            <div class="insight-card">
+
+                <span>
+                    CLUSTER UTILIZATION
+                </span>
+
+                <h3>
+                    Resource balance
+                </h3>
+
+
+                <div class="big-progress">
+
+                    <div class="progress-label">
+
+                        <span>
+                            CPU
+                        </span>
+
+                        <strong id="cpuChartValue">
+                            0%
+                        </strong>
+
+                    </div>
+
+                    <div class="track">
+
+                        <div
+                            id="cpuBar"
+                            class="fill"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="big-progress">
+
+                    <div class="progress-label">
+
+                        <span>
+                            RAM
+                        </span>
+
+                        <strong id="ramChartValue">
+                            0%
+                        </strong>
+
+                    </div>
+
+                    <div class="track">
+
+                        <div
+                            id="ramBar"
+                            class="fill"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="insight-card red-card">
+
+                <span>
+                    CURRENT STRATEGY
+                </span>
+
+                <h3>
+                    Best Fit
+                </h3>
+
+                <p>
+                    The scheduler looks for the server
+                    that leaves the least unused capacity
+                    after your VM is placed.
+                </p>
+
+                <div class="strategy-line">
+
+                    <span>
+                        Efficient packing
+                    </span>
+
+                    <span>
+                        ●
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <footer>
+
+        <span>
+            CloudLab
+        </span>
+
+        <span>
+            A cloud scheduling simulator
+        </span>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
