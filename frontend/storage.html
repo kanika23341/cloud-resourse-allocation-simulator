@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Storage — CloudLab</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+<body>
+<header class="navbar">
+  <a class="brand" href="index.html"><span class="brand-mark">C</span><span>CloudLab</span></a>
+  <nav class="nav-links">
+    <a href="index.html" data-nav="dashboard">Dashboard</a>
+    <a href="ec2.html" data-nav="ec2">EC2 Instances</a>
+    <a href="storage.html" data-nav="storage">Storage</a>
+    <a href="load-balancer.html" data-nav="database">Database & Routing</a>
+    <a href="availability-zones.html" data-nav="zones">Availability Zones</a>
+  </nav>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="eyebrow">Storage services</div>
+        <h1>Store it.<br><span style="color:#e50914">Price it.</span></h1>
+        <p>Create objects in simulated storage tiers and compare estimated monthly cost with retrieval latency. Objects persist in SQLite.</p>
+    </section>
+<div class="grid two">
+<section class="panel">
+    <h3>Create storage object</h3>
+    <form id="storageForm" class="form-grid">
+        <div class="field full"><label for="storageName">Object name</label><input id="storageName" required maxlength="100" value="project-dataset"></div>
+        <div class="field"><label for="storageType">Storage tier</label><select id="storageType"></select></div>
+        <div class="field"><label for="storageSize">Size (GB)</label><input id="storageSize" type="number" min=".01" step=".01" value="10" required></div>
+        <div class="field full"><label for="storageData">Sample payload (optional)</label><textarea id="storageData" rows="3" maxlength="100000" placeholder="A small text payload to persist…"></textarea></div>
+        <div class="field full"><button class="btn" type="submit">Create object →</button></div></form><div id="storageFeedback" class="feedback hidden"></div></section>
+        <section class="panel">
+            <h3>Tier guide</h3>
+            <p class="muted small">Illustrative rates used by the simulator.</p>
+            <div id="tierGrid" class="grid"></div>
+            <p class="muted small">Cost = size in GB × tier rate per month. Latency is a simulated tier attribute, not a measured network benchmark.</p>
+        </section>
+</div>
+<div class="section-head">
+    <div>
+        <h2>Stored objects</h2>
+        <p>Persisted objects and estimated storage cost.</p>
+    </div>
+    <button class="btn secondary" id="refreshStorage">↻ Refresh</button>
+</div>
+<div class="panel">
+    <div id="storageTotal" class="muted small"></div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Tier</th>
+                    <th>Size</th>
+                    <th>Latency</th>
+                    <th>Monthly cost</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="storageRows"></tbody>
+        </table>
+    </div>
+    <div id="storageEmpty" class="empty hidden">No storage objects yet. Create your first object above.</div>
+</div>
+</main>
+<footer class="footer">
+    <span>CloudLab · Persistent storage simulator</span>
+    <span>SQLite-backed object metadata and payload</span>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

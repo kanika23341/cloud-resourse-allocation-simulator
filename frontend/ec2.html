@@ -1,217 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>CloudLab — EC2 Instances</title>
-
-    <link
-        rel="stylesheet"
-        href="ec2.css"
-    >
-
-</head>
-
-
-<body>
-
-    <nav class="navbar">
-
-        <div class="brand">
-
-            <span class="brand-mark">
-                C
-            </span>
-
-            <span>
-                CloudLab
-            </span>
-
-        </div>
-
-
-        <div class="nav-links">
-
-            <a href="index.html">
-                Dashboard
-            </a>
-
-            <a
-                href="ec2.html"
-                class="active"
-            >
-                EC2 Instances
-            </a>
-
-            <a href="#">
-                Load Balancer
-            </a>
-
-            <a href="#">
-                Auto Scaling
-            </a>
-
-        </div>
-
-    </nav>
-    <main>
-
-        <section class="hero">
-
-            <div class="hero-content">
-
-                <p class="eyebrow">
-                    CLOUD COMPUTE
-                </p>
-
-                <h1>
-                    EC2 Instance
-                    <span>Simulator</span>
-                </h1>
-
-                <p class="hero-description">
-                    Explore simulated compute instances,
-                    compare resources, and estimate
-                    infrastructure costs.
-                </p>
-
-            </div>
-
-
-            <div class="hero-stat">
-
-                <span>
-                    INSTANCE TYPES
-                </span>
-
-                <strong id="instanceCount">
-                    —
-                </strong>
-
-            </div>
-
-        </section>
-
-
-        <section class="controls">
-
-            <button
-                class="filter active"
-                data-category="all"
-            >
-                All
-            </button>
-
-            <button
-                class="filter"
-                data-category="General Purpose"
-            >
-                General Purpose
-            </button>
-
-            <button
-                class="filter"
-                data-category="Compute Optimized"
-            >
-                Compute Optimized
-            </button>
-
-            <button
-                class="filter"
-                data-category="Memory Optimized"
-            >
-                Memory Optimized
-            </button>
-
-        </section>
-
-        <section
-            id="instanceGrid"
-            class="instance-grid"
-        >
-
-            <div class="loading">
-                Loading instances...
-            </div>
-
-        </section>
-
-        <section class="calculator">
-
-            <div class="calculator-heading">
-
-                <p class="eyebrow">
-                    COST ESTIMATOR
-                </p>
-
-                <h2>
-                    How much would it cost?
-                </h2>
-
-            </div>
-
-
-            <div class="calculator-content">
-
-                <div class="calculator-input">
-
-                    <label>
-                        Instance
-                    </label>
-
-                    <select id="instanceSelect">
-                        <option value="">
-                            Select instance
-                        </option>
-                    </select>
-
-
-                    <label>
-                        Runtime (hours)
-                    </label>
-
-                    <input
-                        id="runtimeInput"
-                        type="number"
-                        min="1"
-                        value="24"
-                    >
-
-                </div>
-
-
-                <div class="cost-display">
-
-                    <span>
-                        ESTIMATED COST
-                    </span>
-
-                    <strong id="estimatedCost">
-                        $0.00
-                    </strong>
-
-                    <p id="costBreakdown">
-                        Select an instance to calculate
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <script src="ec2.js"></script>
-
-</body>
-
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EC2 Catalogue — CloudLab</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="navbar">
+  <a class="brand" href="index.html"><span class="brand-mark">C</span><span>CloudLab</span></a>
+  <nav class="nav-links">
+    <a href="index.html" data-nav="dashboard">Dashboard</a>
+    <a href="ec2.html" data-nav="ec2">EC2 Instances</a>
+    <a href="storage.html" data-nav="storage">Storage</a>
+    <a href="load-balancer.html" data-nav="database">Database & Routing</a>
+    <a href="availability-zones.html" data-nav="zones">Availability Zones</a>
+  </nav>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="eyebrow">Compute catalogue</div>
+        <h1>Pick your<br><span style="color:#e50914">instance class.</span></h1>
+        <p>Explore a small, illustrative catalogue inspired by cloud instance families. Prices are sample reference values, not live provider pricing.</p>
+    </section>
+<div class="section-head">
+    <div><h2>Instance types</h2><p>Compare capacity and intended workload.</p></div>
+    <button class="btn secondary" id="reloadInstances">↻ Refresh</button>
+</div>
+<section id="instanceGrid" class="grid three"><div class="empty">Loading instances…</div></section>
+<div id="ec2Feedback" class="feedback hidden"></div>
+</main>
+<footer class="footer">
+    <span>CloudLab · EC2-style instance simulator</span>
+    <span>Sample prices for educational use</span>
+</footer>
+<script src="app.js"></script>
+</body></html>

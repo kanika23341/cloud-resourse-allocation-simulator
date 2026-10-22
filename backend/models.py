@@ -1,71 +1,29 @@
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
+from typing import Literal, Any
 
 class VMRequest(BaseModel):
-    name: str
-    cpu: int
-    ram: int
-    duration: float
-    algorithm: str = "best_fit"
+    name: str = Field(min_length=1, max_length=60)
+    cpu: int = Field(ge=1, le=64)
+    ram: int = Field(ge=1, le=256)
+    duration: float = Field(gt=0, le=8760)
+    algorithm: Literal["first_fit", "best_fit"] = "best_fit"
 
+class StorageRequest(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    storage_type: Literal["archive", "large", "small", "nosql", "sql", "fast_retrieval"]
+    size_gb: float = Field(gt=0, le=100000)
+    data: str = Field(default="", max_length=100000)
 
-class Server:
-    def __init__(
-        self,
-        name: str,
-        total_cpu: int,
-        total_ram: int,
-        cost_per_hour: float
-    ):
-        self.name = name
-        self.total_cpu = total_cpu
-        self.total_ram = total_ram
+class DatabaseConfigRequest(BaseModel):
+    read_replicas: int = Field(default=2, ge=0, le=8)
+    shards: int = Field(default=3, ge=1, le=16)
+    backup_mode: Literal["sync", "async"] = "sync"
+    zones: int = Field(default=3, ge=1, le=6)
+    cache_enabled: bool = True
 
-        self.available_cpu = total_cpu
-        self.available_ram = total_ram
+class DatabaseWriteRequest(BaseModel):
+    key: str = Field(min_length=1, max_length=250)
+    value: Any
 
-        self.cost_per_hour = cost_per_hour
-        self.vms = []
-
-    def can_allocate(self, vm: VMRequest) -> bool:
-        return (
-            self.available_cpu >= vm.cpu
-            and self.available_ram >= vm.ram
-        )
-
-    def allocate(self, vm: VMRequest):
-        self.available_cpu -= vm.cpu
-        self.available_ram -= vm.ram
-
-        self.vms.append(vm.name)
-
-    def get_utilization(self):
-        cpu_utilization = (
-            (self.total_cpu - self.available_cpu)
-            / self.total_cpu
-        ) * 100
-
-        ram_utilization = (
-            (self.total_ram - self.available_ram)
-            / self.total_ram
-        ) * 100
-
-        return {
-            "cpu_utilization": round(cpu_utilization, 2),
-            "ram_utilization": round(ram_utilization, 2)
-        }
-
-    def to_dict(self):
-        utilization = self.get_utilization()
-
-        return {
-            "name": self.name,
-            "total_cpu": self.total_cpu,
-            "available_cpu": self.available_cpu,
-            "total_ram": self.total_ram,
-            "available_ram": self.available_ram,
-            "cost_per_hour": self.cost_per_hour,
-            "vms": self.vms,
-            "cpu_utilization": utilization["cpu_utilization"],
-            "ram_utilization": utilization["ram_utilization"]
-        }
+class ResetRequest(BaseModel):
+    confirm: bool = False

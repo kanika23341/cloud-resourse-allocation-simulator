@@ -1,2 +1,6 @@
-**/__pycache__/
+__pycache__/
 *.py[cod]
+.venv/
+backend/cloudlab.db
+backend/cloudlab.db-shm
+backend/cloudlab.db-wal

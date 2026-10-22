@@ -1,211 +1,136 @@
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from models import VMRequest, Server
+from database import init_db, connect, transaction, log_event
+from models import VMRequest, ResetRequest
+from scheduler import Server, select_server
 from ec2_instances import EC2_INSTANCE_TYPES
+from cloud_services import router as cloud_services_router, start_background_workers, stop_background_workers
+import asyncio
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    backup_task = await start_background_workers()
+    yield
+    await stop_background_workers(backup_task)
 
 app = FastAPI(
-    title="Cloud Resource Allocation Simulator",
-    description="Simulates VM allocation across cloud servers.",
-    version="1.0.0"
+    title="CloudLab — Cloud Resource Allocation Simulator",
+    description="A persistent local simulator for VM scheduling, storage, replication, backups, sharding, and zones.",
+    version="2.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
-def create_servers():
-    return [
-        Server("server-01", 16, 32, 0.82),
-        Server("server-02", 8, 16, 0.54),
-        Server("server-03", 32, 64, 1.45),
-        Server("server-04", 16, 32, 0.91)
-    ]
+app.include_router(cloud_services_router)
 
-
-servers = create_servers()
-
-def first_fit(vm: VMRequest):
-    for server in servers:
-
-        if server.can_allocate(vm):
-            return server
-
-    return None
-
-
-def best_fit(vm: VMRequest):
-
-    suitable_servers = []
-
-    for server in servers:
-
-        if server.can_allocate(vm):
-            suitable_servers.append(server)
-
-    if not suitable_servers:
-        return None
-
-    def remaining_resources(server):
-
-        remaining_cpu = server.available_cpu - vm.cpu
-        remaining_ram = server.available_ram - vm.ram
-
-        return remaining_cpu + remaining_ram
-
-    return min(
-        suitable_servers,
-        key=remaining_resources
-    )
-
-
-def select_server(vm: VMRequest):
-
-    if vm.algorithm == "first_fit":
-        return first_fit(vm)
-
-    if vm.algorithm == "best_fit":
-        return best_fit(vm)
-
-    return best_fit(vm)
+def _servers(c):
+    rows = c.execute("SELECT * FROM servers ORDER BY name").fetchall()
+    vms = c.execute("SELECT * FROM vm_allocations ORDER BY id").fetchall()
+    by_server = {r["name"]: [] for r in rows}
+    for vm in vms:
+        if vm["server_name"] in by_server:
+            by_server[vm["server_name"]].append({
+                "id": vm["id"], "name": vm["name"], "cpu": vm["cpu"], "ram": vm["ram"],
+                "duration": vm["duration"], "algorithm": vm["algorithm"], "estimated_cost": vm["estimated_cost"]
+            })
+    result = []
+    for row in rows:
+        item = dict(row)
+        item["used_cpu"] = item["total_cpu"] - item["available_cpu"]
+        item["used_ram"] = item["total_ram"] - item["available_ram"]
+        item["vms"] = by_server[row["name"]]
+        result.append(item)
+    return result
 
 @app.get("/")
 def home():
+    return {"message": "CloudLab API is running", "docs": "/docs", "database": "SQLite"}
 
-    return {
-        "message": "Cloud Resource Allocation Simulator API is running"
-    }
-
+@app.get("/health")
+def health():
+    c = connect()
+    try:
+        c.execute("SELECT 1").fetchone()
+        return {"status": "healthy", "database": "connected"}
+    finally:
+        c.close()
 
 @app.get("/servers")
 def get_servers():
-
-    return {
-        "servers": [
-            server.to_dict()
-            for server in servers
-        ]
-    }
-
+    c = connect()
+    try:
+        return {"servers": _servers(c)}
+    finally:
+        c.close()
 
 @app.post("/allocate")
 def allocate_vm(vm: VMRequest):
-
-    selected_server = select_server(vm)
-
-    if selected_server is None:
-
-        return {
-            "success": False,
-            "message": "No server has enough resources for this VM."
-        }
-
-    selected_server.allocate(vm)
-
-    estimated_cost = (
-        selected_server.cost_per_hour
-        * vm.duration
-    )
-
-    return {
-        "success": True,
-
-        "message": "VM allocated successfully.",
-
-        "vm": {
-            "name": vm.name,
-            "cpu": vm.cpu,
-            "ram": vm.ram,
-            "duration": vm.duration
-        },
-
-        "allocation": {
-            "server": selected_server.name,
-            "algorithm": vm.algorithm,
-            "estimated_cost": round(
-                estimated_cost,
-                2
-            )
-        },
-
-        "server_state": selected_server.to_dict()
-    }
-
+    request = vm.model_dump()
+    with transaction() as c:
+        rows = c.execute("SELECT * FROM servers ORDER BY name").fetchall()
+        servers = [Server(name=r["name"], total_cpu=r["total_cpu"], total_ram=r["total_ram"],
+                          cost_per_hour=r["cost_per_hour"], available_cpu=r["available_cpu"],
+                          available_ram=r["available_ram"]) for r in rows]
+        
+        selected = select_server(request, servers)
+        if selected is None:
+            raise HTTPException(409, "No server has enough free CPU and RAM for this VM.")
+        cost = round(selected.cost_per_hour * vm.duration, 2)
+        c.execute("UPDATE servers SET available_cpu=?, available_ram=? WHERE name=?",
+                  (selected.available_cpu - vm.cpu, selected.available_ram - vm.ram, selected.name))
+        
+        cur = c.execute("""INSERT INTO vm_allocations(name,cpu,ram,duration,algorithm,server_name,estimated_cost)
+                            VALUES(?,?,?,?,?,?,?)""",
+                        (vm.name, vm.cpu, vm.ram, vm.duration, vm.algorithm, selected.name, cost))
+        
+        log_event(c, "compute", f"Allocated VM '{vm.name}' to {selected.name} using {vm.algorithm}.")
+        server = c.execute("SELECT * FROM servers WHERE name=?", (selected.name,)).fetchone()
+        state = dict(server)
+        state["used_cpu"] = state["total_cpu"] - state["available_cpu"]
+        state["used_ram"] = state["total_ram"] - state["available_ram"]
+    return {"success": True, "message": "VM allocated successfully.", "vm": {**request, "id": cur.lastrowid},
+            "allocation": {"server": selected.name, "algorithm": vm.algorithm, "estimated_cost": cost},
+            "server_state": state}
 
 @app.post("/reset")
 def reset_simulation():
-
-    global servers
-
-    servers = create_servers()
-
-    return {
-        "success": True,
-        "message": "Simulation reset successfully."
-    }
-
+    with transaction() as c:
+        c.execute("DELETE FROM vm_allocations")
+        c.execute("UPDATE servers SET available_cpu=total_cpu, available_ram=total_ram")
+        log_event(c, "system", "Compute allocation simulation reset; storage and database data were preserved.")
+    return {"success": True, "message": "Compute simulation reset. Storage and database records were preserved."}
 
 @app.get("/metrics")
 def get_metrics():
-
-    total_cpu = 0
-    available_cpu = 0
-
-    total_ram = 0
-    available_ram = 0
-
-    hourly_cost = 0
-    active_vms = 0
-
-    for server in servers:
-
-        total_cpu += server.total_cpu
-        available_cpu += server.available_cpu
-
-        total_ram += server.total_ram
-        available_ram += server.available_ram
-
-        active_vms += len(server.vms)
-
-        if server.vms:
-            hourly_cost += server.cost_per_hour
-
-    cpu_utilization = (
-        (total_cpu - available_cpu)
-        / total_cpu
-    ) * 100
-
-    ram_utilization = (
-        (total_ram - available_ram)
-        / total_ram
-    ) * 100
-
-    return {
-        "active_vms": active_vms,
-
-        "cpu_utilization": round(
-            cpu_utilization,
-            2
-        ),
-
-        "ram_utilization": round(
-            ram_utilization,
-            2
-        ),
-
-        "hourly_cost": round(
-            hourly_cost,
-            2
-        )
-    }
+    c = connect()
+    try:
+        servers = c.execute("SELECT * FROM servers").fetchall()
+        total_cpu = sum(r["total_cpu"] for r in servers)
+        free_cpu = sum(r["available_cpu"] for r in servers)
+        total_ram = sum(r["total_ram"] for r in servers)
+        free_ram = sum(r["available_ram"] for r in servers)
+        active = c.execute("SELECT COUNT(*) n FROM vm_allocations").fetchone()["n"]
+        hourly_cost = sum(r["cost_per_hour"] for r in servers if r["available_cpu"] < r["total_cpu"] or r["available_ram"] < r["total_ram"])
+        storage = c.execute("SELECT COALESCE(SUM(monthly_cost),0) n FROM storage_objects").fetchone()["n"]
+        db_count = c.execute("SELECT COUNT(*) n FROM primary_records").fetchone()["n"]
+        
+        return {"active_vms": active,
+                "cpu_utilization": round((total_cpu-free_cpu)/total_cpu*100, 2) if total_cpu else 0,
+                "ram_utilization": round((total_ram-free_ram)/total_ram*100, 2) if total_ram else 0,
+                "hourly_cost": round(hourly_cost, 2), "storage_monthly_cost": round(storage, 4),
+                "database_records": db_count, "servers": len(servers)}
+    finally:
+        c.close()
 
 @app.get("/ec2/instances")
 def get_ec2_instances():
-    return {
-        "instances": list(
-            EC2_INSTANCE_TYPES.values()
-        )
-    }
+    return {"instances": list(EC2_INSTANCE_TYPES.values())}

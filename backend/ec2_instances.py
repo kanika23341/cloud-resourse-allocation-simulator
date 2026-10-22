@@ -1,66 +1,9 @@
 EC2_INSTANCE_TYPES = {
-
-    "t3.small": {
-        "name": "t3.small",
-        "cpu": 2,
-        "ram": 2,
-        "cost_per_hour": 0.0208,
-        "category": "General Purpose"
-    },
-
-    "t3.medium": {
-        "name": "t3.medium",
-        "cpu": 2,
-        "ram": 4,
-        "cost_per_hour": 0.0416,
-        "category": "General Purpose"
-    },
-
-    "t3.large": {
-        "name": "t3.large",
-        "cpu": 2,
-        "ram": 8,
-        "cost_per_hour": 0.0832,
-        "category": "General Purpose"
-    },
-
-    "m5.large": {
-        "name": "m5.large",
-        "cpu": 2,
-        "ram": 8,
-        "cost_per_hour": 0.096,
-        "category": "General Purpose"
-    },
-
-    "m5.xlarge": {
-        "name": "m5.xlarge",
-        "cpu": 4,
-        "ram": 16,
-        "cost_per_hour": 0.192,
-        "category": "General Purpose"
-    },
-
-    "c5.large": {
-        "name": "c5.large",
-        "cpu": 2,
-        "ram": 4,
-        "cost_per_hour": 0.085,
-        "category": "Compute Optimized"
-    },
-
-    "c5.xlarge": {
-        "name": "c5.xlarge",
-        "cpu": 4,
-        "ram": 8,
-        "cost_per_hour": 0.17,
-        "category": "Compute Optimized"
-    },
-
-    "r5.large": {
-        "name": "r5.large",
-        "cpu": 2,
-        "ram": 16,
-        "cost_per_hour": 0.126,
-        "category": "Memory Optimized"
-    }
+    "t3.micro": {"name": "t3.micro", "family": "General purpose", "vcpu": 2, "ram_gb": 1, "price_per_hour": 0.0104, "use_case": "Tiny demos and development"},
+    "t3.small": {"name": "t3.small", "family": "General purpose", "vcpu": 2, "ram_gb": 2, "price_per_hour": 0.0208, "use_case": "Light web services"},
+    "t3.medium": {"name": "t3.medium", "family": "General purpose", "vcpu": 2, "ram_gb": 4, "price_per_hour": 0.0416, "use_case": "Small application servers"},
+    "m7i.large": {"name": "m7i.large", "family": "General purpose", "vcpu": 2, "ram_gb": 8, "price_per_hour": 0.1008, "use_case": "Balanced application workloads"},
+    "c7i.large": {"name": "c7i.large", "family": "Compute optimized", "vcpu": 2, "ram_gb": 4, "price_per_hour": 0.0893, "use_case": "CPU-heavy services"},
+    "r7i.large": {"name": "r7i.large", "family": "Memory optimized", "vcpu": 2, "ram_gb": 16, "price_per_hour": 0.1323, "use_case": "Memory-heavy services"},
+    "c7i.xlarge": {"name": "c7i.xlarge", "family": "Compute optimized", "vcpu": 4, "ram_gb": 8, "price_per_hour": 0.1786, "use_case": "Parallel compute workloads"},
 }

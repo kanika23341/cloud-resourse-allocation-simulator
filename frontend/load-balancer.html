@@ -1,0 +1,115 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Database & Routing — CloudLab</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="navbar">
+  <a class="brand" href="index.html"><span class="brand-mark">C</span><span>CloudLab</span></a>
+  <nav class="nav-links">
+    <a href="index.html" data-nav="dashboard">Dashboard</a>
+    <a href="ec2.html" data-nav="ec2">EC2 Instances</a>
+    <a href="storage.html" data-nav="storage">Storage</a>
+    <a href="load-balancer.html" data-nav="database">Database & Routing</a>
+    <a href="availability-zones.html" data-nav="zones">Availability Zones</a>
+  </nav>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="eyebrow">Data plane</div>
+        <h1>Write to primary.<br><span style="color:#e50914">Scale your reads.</span></h1>
+        <p>Configure shards, asynchronous read replicas, backup consistency, and caching. Writes and replication jobs are persisted in SQLite.</p>
+    
+    </section>
+<div class="grid two">
+    <section class="panel">
+        <h3>Database topology</h3>
+        <form id="configForm" class="form-grid">
+            <div class="field"><label for="replicaCount">Read replicas</label><input id="replicaCount" type="number" min="0" max="8" value="2" required></div>
+            <div class="field"><label for="shardCount">Shards</label><input id="shardCount" type="number" min="1" max="16" value="3" required></div>
+            <div class="field"><label for="zoneCount">Availability zones</label><input id="zoneCount" type="number" min="1" max="6" value="3" required></div>
+            <div class="field"><label for="backupMode">Backup mode</label><select id="backupMode"><option value="sync">Synchronous — wait for backup</option><option value="async">Asynchronous — queue backup</option></select></div>
+            <div class="field full"><label class="check-row"><input class="toggle" id="cacheEnabled" type="checkbox" checked> Enable read cache</label></div>
+            <div class="field full"><button class="btn" type="submit">Apply topology →</button></div>
+        </form>
+        <div id="configFeedback" class="feedback hidden"></div>
+    </section>
+    <section class="panel"><h3>Live routing status</h3><div id="routingStatus" class="empty">Loading configuration…</div><div class="actions"><button class="btn secondary" id="refreshDb">↻ Refresh status</button></div></section>
+</div>
+<div class="section-head">
+    <div>
+        <h2>Write a record</h2>
+        <p>JSON values are stored on the primary and assigned to a shard.</p>
+    </div>
+</div>
+<section class="grid two">
+    <article class="panel">
+        <form id="writeForm" class="form-grid">
+            <div class="field full">
+                <label for="recordKey">Record key</label>
+                <input id="recordKey" required maxlength="250" value="customer:1001">
+            </div>
+            <div class="field full">
+                <label for="recordValue">JSON value</label>
+                <textarea id="recordValue" rows="5" required>{"name":"Asha","plan":"pro","active":true}</textarea>
+            </div>
+            <div class="field full">
+                <button class="btn" type="submit">Write to primary →</button>
+            </div>
+        </form>
+        <div id="writeFeedback" class="feedback hidden"></div>
+    </article>
+    <article class="panel">
+        <h3>Read a record</h3>
+        <form id="readForm" class="form-grid">
+            <div class="field full">
+                <label for="readKey">Record key</label>
+                <input id="readKey" required value="customer:1001">
+            </div>
+            <div class="field full">
+                <button class="btn secondary" type="submit">Read through router →</button>
+            </div>
+        </form>
+        <div id="readFeedback" class="feedback hidden"></div>
+        <div id="readResult" class="record-result hidden"><pre id="readOutput"></pre></div>
+    </article>
+</section>
+<div class="section-head">
+    <div>
+        <h2>Replication status</h2>
+        <p>Replica copies are updated by a background worker; pending jobs may show briefly.</p>
+    </div>
+    <button class="btn secondary" id="refreshReplicas">↻ Refresh</button>
+</div>
+
+<section id="replicaGrid" class="grid three">
+    <div class="empty">Loading replica state…</div>
+</section>
+<div class="section-head">
+    <div>
+        <h2>Backup history</h2>
+        <p>Synchronous backups complete before write acknowledgement. Async backups transition from pending to completed.</p>
+    </div>
+    <button class="btn secondary" id="refreshBackups">↻ Refresh</button>
+</div>
+
+<section class="panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Version</th>
+                    <th>Mode</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody id="backupRows"></tbody>
+        </table>
+    </div>
+    <div id="backupEmpty" class="empty hidden">No backups recorded yet.</div>
+</section>
+</main>
+<footer class="footer">
+    <span>CloudLab · Replication and consistency simulator</span>
+    <span>Async replicas · Sync/async backup jobs</span>
+</footer>
+<script src="app.js"></script>
+</body></html>
