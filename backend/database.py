@@ -29,6 +29,8 @@ def transaction():
         conn.close()
 
 def init_db():
+    # sqlite3.executescript manages its own transaction boundaries, so schema
+    # creation is intentionally performed on a plain connection first.
     conn = connect()
     try:
         conn.executescript("""
@@ -88,6 +90,37 @@ def init_db():
         CREATE TABLE IF NOT EXISTS routing_counter (
             id INTEGER PRIMARY KEY CHECK(id=1), counter INTEGER NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS managed_instances (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            instance_name TEXT NOT NULL,
+            instance_type TEXT NOT NULL,
+            family TEXT NOT NULL,
+            vcpu INTEGER NOT NULL,
+            ram_gb INTEGER NOT NULL,
+            storage_gb INTEGER NOT NULL,
+            zone TEXT NOT NULL,
+            status TEXT NOT NULL CHECK(status IN ('running','stopped','terminated')),
+            price_per_hour REAL NOT NULL,
+            created_at TEXT NOT NULL,
+            started_at TEXT,
+            stopped_at TEXT,
+            terminated_at TEXT,
+            accumulated_seconds INTEGER NOT NULL DEFAULT 0,
+            assigned_server TEXT,
+            FOREIGN KEY(assigned_server) REFERENCES servers(name)
+        );
+        CREATE TABLE IF NOT EXISTS instance_schedules (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            instance_id INTEGER NOT NULL,
+            action TEXT NOT NULL CHECK(action IN ('start','stop','terminate')),
+            run_at TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','completed','failed')),
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            completed_at TEXT,
+            error TEXT,
+            FOREIGN KEY(instance_id) REFERENCES managed_instances(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_instance_schedules_due ON instance_schedules(status, run_at);
         INSERT OR IGNORE INTO routing_counter(id,counter) VALUES(1,0);
         """)
     finally:
