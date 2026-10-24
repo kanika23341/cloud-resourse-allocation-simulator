@@ -1,87 +1,147 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CloudLab — Resource Simulator</title><link rel="stylesheet" href="style.css"></head>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CloudLab — Resource Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
 <body>
 
-<header class="navbar">
-  <a class="brand" href="index.html"><span class="brand-mark">C</span><span>CloudLab</span></a>
-  <nav class="nav-links">
-    <a href="index.html" data-nav="dashboard">Dashboard</a>
-    <a href="ec2.html" data-nav="ec2">EC2 Instances</a>
-    <a href="storage.html" data-nav="storage">Storage</a>
-    <a href="load-balancer.html" data-nav="database">Database & Routing</a>
-    <a href="availability-zones.html" data-nav="zones">Availability Zones</a>
-  </nav>
-</header>
+  <header class="navbar">
+    <a class="brand" href="index.html"><span class="brand-mark">C</span><span>CloudLab</span></a>
+    <nav class="nav-links">
+      <a href="index.html" data-nav="dashboard">Dashboard</a>
+      <a href="ec2.html" data-nav="ec2">EC2 Instances</a>
+      <a href="storage.html" data-nav="storage">Storage</a>
+      <a href="load-balancer.html" data-nav="database">Database & Routing</a>
+      <a href="availability-zones.html" data-nav="zones">Availability Zones</a>
+    </nav>
+  </header>
 
-<main>
-  <section class="hero">
-    <div class="status-line">
+  <main>
+    <section class="hero">
+      <div class="status-line">
         <span class="eyebrow">Cloud infrastructure playground</span>
         <span class="status">
-            <span class="dot"></span>
-            <span id="apiStatus">Checking API</span>
+          <span class="dot"></span>
+          <span id="apiStatus">Checking API</span>
         </span>
-    </div>
-    <h1>Give your workloads<br>a place to <span style="color:var(--red)">run.</span></h1>
-    <p>Allocate compute, compare placement algorithms, and explore how storage, replication, backups, and availability zones work together in a simulated cloud.</p>
-    <div class="actions">
+      </div>
+      <h1>Give your workloads<br>a place to <span style="color:var(--red)">run.</span></h1>
+      <p>Allocate compute, compare placement algorithms, and explore how storage, replication, backups, and availability
+        zones work together in a simulated cloud.</p>
+      <div class="actions">
         <a class="btn" href="#allocate">Allocate a VM ↘</a>
         <a class="btn secondary" href="load-balancer.html">Explore database systems ↗</a>
+      </div>
+    </section>
+    <div class="section-head">
+      <div>
+        <h2>Cloud at a glance</h2>
+        <p>Live metrics from your local SQLite-backed simulation.</p>
+      </div>
+      <button class="btn secondary" id="refreshBtn">↻ Refresh</button>
     </div>
-  </section>
-  <div class="section-head"><div>
-    <h2>Cloud at a glance</h2><p>Live metrics from your local SQLite-backed simulation.</p></div>
-    <button class="btn secondary" id="refreshBtn">↻ Refresh</button>
-</div>
-<section class="grid">
-    <article class="metric"><div class="label">Active VMs</div><div class="value" id="activeVms">—</div><div class="note">Persistent allocations</div></article>
-    <article class="metric"><div class="label">CPU utilization</div><div class="value" id="cpuUsage">—</div><div class="note">Across compute pool</div></article>
-    <article class="metric"><div class="label">RAM utilization</div><div class="value" id="ramUsage">—</div><div class="note">Across compute pool</div></article>
-    <article class="metric"><div class="label">Compute hourly cost</div><div class="value" id="hourlyCost">—</div><div class="note">Estimated occupied-server cost</div></article>
-  </section>
-  <div class="section-head" id="allocate">
-    <div>
+    <section class="grid">
+      <article class="metric">
+        <div class="label">Active VMs</div>
+        <div class="value" id="activeVms">—</div>
+        <div class="note">Persistent allocations</div>
+      </article>
+      <article class="metric">
+        <div class="label">CPU utilization</div>
+        <div class="value" id="cpuUsage">—</div>
+        <div class="note">Across compute pool</div>
+      </article>
+      <article class="metric">
+        <div class="label">RAM utilization</div>
+        <div class="value" id="ramUsage">—</div>
+        <div class="note">Across compute pool</div>
+      </article>
+      <article class="metric">
+        <div class="label">Compute hourly cost</div>
+        <div class="value" id="hourlyCost">—</div>
+        <div class="note">Estimated occupied-server cost</div>
+      </article>
+    </section>
+    <div class="section-head" id="allocate">
+      <div>
         <h2>Deploy a virtual machine</h2>
         <p>Choose a placement strategy and let the scheduler select a server.</p>
+      </div>
     </div>
-</div>
-  <section class="grid two">
-    <article class="panel">
-      <h3>Workload configuration</h3>
-      <p class="muted small">CPU is measured in vCPU units; RAM is in GB.</p>
-      <form id="vmForm" class="form-grid">
-        <div class="field full"><label for="vmName">VM name</label><input id="vmName" required maxlength="60" value="web-worker-01"></div>
-        <div class="field"><label for="vmCpu">CPU cores</label><input id="vmCpu" type="number" min="1" max="64" value="2" required></div>
-        <div class="field"><label for="vmRam">RAM (GB)</label><input id="vmRam" type="number" min="1" max="256" value="4" required></div>
-        <div class="field"><label for="vmDuration">Duration (hours)</label><input id="vmDuration" type="number" min=".1" max="8760" step=".1" value="8" required></div>
-        <div class="field"><label for="vmAlgorithm">Placement algorithm</label><select id="vmAlgorithm"><option value="best_fit">Best Fit</option><option value="first_fit">First Fit</option></select></div>
-        <div class="field full"><button class="btn" type="submit">Allocate VM →</button></div>
-      </form><div id="allocationFeedback" class="feedback hidden"></div>
-    </article>
-    <article class="panel">
+    <section class="grid two">
+      <article class="panel">
+        <h3>Workload configuration</h3>
+        <p class="muted small">CPU is measured in vCPU units; RAM is in GB.</p>
+        <form id="vmForm" class="form-grid">
+          <div class="field full"><label for="vmName">VM name</label><input id="vmName" required maxlength="60"
+              value="web-worker-01"></div>
+          <div class="field"><label for="vmCpu">CPU cores</label><input id="vmCpu" type="number" min="1" max="64"
+              value="2" required></div>
+          <div class="field"><label for="vmRam">RAM (GB)</label><input id="vmRam" type="number" min="1" max="256"
+              value="4" required></div>
+          <div class="field"><label for="vmDuration">Duration (hours)</label><input id="vmDuration" type="number"
+              min=".1" max="8760" step=".1" value="8" required></div>
+          <div class="field"><label for="vmAlgorithm">Placement algorithm</label><select id="vmAlgorithm">
+              <option value="best_fit">Best Fit</option>
+              <option value="first_fit">First Fit</option>
+            </select></div>
+          <div class="field full"><button class="btn" type="submit">Allocate VM →</button></div>
+        </form>
+        <div id="allocationFeedback" class="feedback hidden"></div>
+      </article>
+      <article class="panel">
         <h3>Allocation result</h3>
         <p class="muted small">Your latest placement result appears here.</p>
         <div id="allocationResult" class="empty">No allocation made in this session yet.</div>
         <div class="actions"><button class="btn secondary" id="resetCompute">Reset compute pool</button></div>
         <div id="resetFeedback" class="feedback hidden"></div>
-    </article>
-  </section>
-  <div class="section-head">
-    <div>
+      </article>
+    </section>
+    <div class="section-head">
+      <div>
         <h2>Compute pool</h2>
         <p>Server capacity updates after each successful allocation.</p>
+      </div>
     </div>
-</div>
-  <section id="serverGrid" class="grid two">
-    <div class="empty">Loading servers…</div>
-</section>
-  <div class="section-head"><div><h2>Explore cloud services</h2><p>Each subsystem has its own workspace.</p></div></div>
-  <section class="grid three">
-    <a class="service-card" href="ec2.html"><span class="service-icon">▦</span><h3>EC2 instances</h3><p>Compare simulated instance families, vCPU, RAM, and hourly prices.</p><span class="arrow">Open instance catalogue ↗</span></a>
-    <a class="service-card" href="storage.html"><span class="service-icon">▤</span><h3>Object storage</h3><p>Create persistent objects across cost and retrieval-latency tiers.</p><span class="arrow">Manage storage ↗</span></a>
-    <a class="service-card" href="load-balancer.html"><span class="service-icon">⇄</span><h3>Database & routing</h3><p>Configure replicas, sharding, cache, and sync/async backups.</p><span class="arrow">Inspect data plane ↗</span></a>
-    <a class="service-card" href="availability-zones.html"><span class="service-icon">⌘</span><h3>Availability zones</h3><p>Inspect simulated shard distribution across healthy zones.</p><span class="arrow">View zone topology ↗</span></a>
-  </section>
-</main>
-<footer class="footer"><span>CloudLab · Local cloud systems simulator</span><span>FastAPI · SQLite · Scheduling experiments</span></footer>
-<script src="app.js"></script></body></html>
+    <section id="serverGrid" class="grid two">
+      <div class="empty">Loading servers…</div>
+    </section>
+    <div class="section-head">
+      <div>
+        <h2>Explore cloud services</h2>
+        <p>Each subsystem has its own workspace.</p>
+      </div>
+    </div>
+    <section class="grid three">
+      <a class="service-card" href="ec2.html"><span class="service-icon">▦</span>
+        <h3>EC2 instances</h3>
+        <p>Compare simulated instance families, vCPU, RAM, and hourly prices.</p><span class="arrow">Open instance
+          catalogue ↗</span>
+      </a>
+      <a class="service-card" href="storage.html"><span class="service-icon">▤</span>
+        <h3>Object storage</h3>
+        <p>Create persistent objects across cost and retrieval-latency tiers.</p><span class="arrow">Manage storage
+          ↗</span>
+      </a>
+      <a class="service-card" href="load-balancer.html"><span class="service-icon">⇄</span>
+        <h3>Database & routing</h3>
+        <p>Configure replicas, sharding, cache, and sync/async backups.</p><span class="arrow">Inspect data plane
+          ↗</span>
+      </a>
+      <a class="service-card" href="availability-zones.html"><span class="service-icon">⌘</span>
+        <h3>Availability zones</h3>
+        <p>Inspect simulated shard distribution across healthy zones.</p><span class="arrow">View zone topology ↗</span>
+      </a>
+    </section>
+  </main>
+  <footer class="footer"><span>CloudLab · Local cloud systems simulator</span><span>FastAPI · SQLite · Scheduling
+      experiments</span></footer>
+  <script src="app.js"></script>
+</body>
+
+</html>

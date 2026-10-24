@@ -1,31 +1,150 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EC2 Catalogue — CloudLab</title><link rel="stylesheet" href="style.css"></head><body>
-<header class="navbar">
-  <a class="brand" href="index.html"><span class="brand-mark">C</span><span>CloudLab</span></a>
-  <nav class="nav-links">
-    <a href="index.html" data-nav="dashboard">Dashboard</a>
-    <a href="ec2.html" data-nav="ec2">EC2 Instances</a>
-    <a href="storage.html" data-nav="storage">Storage</a>
-    <a href="load-balancer.html" data-nav="database">Database & Routing</a>
-    <a href="availability-zones.html" data-nav="zones">Availability Zones</a>
-  </nav>
-</header>
+<!DOCTYPE html>
+<html lang="en">
 
-<main>
-    <section class="hero">
-        <div class="eyebrow">Compute catalogue</div>
-        <h1>Pick your<br><span style="color:#e50914">instance class.</span></h1>
-        <p>Explore a small, illustrative catalogue inspired by cloud instance families. Prices are sample reference values, not live provider pricing.</p>
-    </section>
-<div class="section-head">
-    <div><h2>Instance types</h2><p>Compare capacity and intended workload.</p></div>
-    <button class="btn secondary" id="reloadInstances">↻ Refresh</button>
-</div>
-<section id="instanceGrid" class="grid three"><div class="empty">Loading instances…</div></section>
-<div id="ec2Feedback" class="feedback hidden"></div>
-</main>
-<footer class="footer">
-    <span>CloudLab · EC2-style instance simulator</span>
-    <span>Sample prices for educational use</span>
-</footer>
-<script src="app.js"></script>
-</body></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EC2 Console — CloudLab</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="navbar">
+        <a class="brand" href="index.html"><span class="brand-mark">C</span><span>CloudLab</span></a>
+        <nav class="nav-links">
+            <a href="index.html" data-nav="dashboard">Dashboard</a>
+            <a href="ec2.html" data-nav="ec2">EC2 Instances</a>
+            <a href="storage.html" data-nav="storage">Storage</a>
+            <a href="load-balancer.html" data-nav="database">Database &amp; Routing</a>
+            <a href="availability-zones.html" data-nav="zones">Availability Zones</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="eyebrow">CloudLab compute control plane</div>
+            <h1>Launch it.<br><span style="color:var(--red)">Track every second.</span></h1>
+            <p>Launch simulated EC2-style instances, manage their lifecycle, track accrued compute and storage costs,
+                and schedule future actions. All rates are illustrative and no real cloud resources are created.</p>
+        </section>
+
+        <div class="section-head">
+            <div>
+                <h2>Instance overview</h2>
+                <p>Costs are calculated from persisted timestamps, not a counter that resets when you refresh.</p>
+            </div>
+            <button class="btn secondary" id="reloadInstances">↻ Refresh</button>
+        </div>
+        <section class="grid four instance-summary" id="instanceSummary">
+            <article class="metric">
+                <div class="label">Running</div>
+                <div class="value">—</div>
+            </article>
+            <article class="metric">
+                <div class="label">Stopped</div>
+                <div class="value">—</div>
+            </article>
+            <article class="metric">
+                <div class="label">Compute accrued</div>
+                <div class="value">—</div>
+            </article>
+            <article class="metric">
+                <div class="label">Total accrued</div>
+                <div class="value">—</div>
+            </article>
+        </section>
+
+        <div class="section-head" id="launch">
+            <div>
+                <h2>Launch an instance</h2>
+                <p>Choose a simulated instance type and placement strategy.</p>
+            </div>
+        </div>
+        <section class="grid two">
+            <article class="panel">
+                <form id="launchInstanceForm" class="form-grid">
+                    <div class="field full"><label for="instanceName">Instance name</label><input id="instanceName"
+                            maxlength="60" required value="web-server-01" placeholder="e.g. api-worker-01"></div>
+                    <div class="field full"><label for="instanceType">Instance type</label><select id="instanceType"
+                            required></select></div>
+                    <div class="field"><label for="instanceStorage">Root storage (GB)</label><input id="instanceStorage"
+                            type="number" min="8" max="2048" step="1" value="20" required></div>
+                    <div class="field"><label for="instanceZone">Availability zone</label><select id="instanceZone">
+                            <option value="zone-a">Zone A</option>
+                            <option value="zone-b">Zone B</option>
+                            <option value="zone-c">Zone C</option>
+                        </select></div>
+                    <div class="field"><label for="instanceAlgorithm">Host placement</label><select
+                            id="instanceAlgorithm">
+                            <option value="best_fit">Best Fit</option>
+                            <option value="first_fit">First Fit</option>
+                        </select></div>
+                    <div class="field"><label for="instanceStartMode">Initial state</label><select
+                            id="instanceStartMode">
+                            <option value="running">Launch and start</option>
+                            <option value="stopped">Create stopped</option>
+                        </select></div>
+                    <div class="field full"><button class="btn" type="submit">Launch instance →</button></div>
+                </form>
+                <div id="launchFeedback" class="feedback hidden"></div>
+            </article>
+            <article class="panel">
+                <h3>Billing rules</h3>
+                <p class="muted small">The simulator calculates cost using elapsed runtime persisted in SQLite.</p>
+                <div class="billing-rule"><strong>Compute</strong><span>₹/hour × accumulated running seconds ÷
+                        3,600</span></div>
+                <div class="billing-rule"><strong>Storage</strong><span>₹0.10 per GB-month, prorated from creation until
+                        termination</span></div>
+                <div class="billing-rule"><strong>Stop</strong><span>Pauses compute charges; retained storage continues
+                        to accrue cost.</span></div>
+                <div class="billing-rule"><strong>Terminate</strong><span>Ends compute and root-storage accrual while
+                        preserving billing history.</span></div>
+                <p class="muted small">These are simulator rules and sample prices, not AWS billing or exact AWS pricing
+                    behavior.</p>
+            </article>
+        </section>
+
+        <div class="section-head">
+            <div>
+                <h2>Your instances</h2>
+                <p>Runtime and costs refresh automatically while this page is open.</p>
+            </div>
+        </div>
+        <section id="managedInstanceGrid" class="grid two">
+            <div class="empty">Loading instances…</div>
+        </section>
+
+        <div class="section-head">
+            <div>
+                <h2>Scheduled actions</h2>
+                <p>Pending actions are processed by the backend worker, even after you leave this page, as long as the
+                    backend is running.</p>
+            </div><button class="btn secondary" id="refreshSchedules">↻ Refresh schedules</button>
+        </div>
+        <section class="panel table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Instance</th>
+                        <th>Action</th>
+                        <th>Scheduled for (local time)</th>
+                        <th>Status</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody id="scheduleRows">
+                    <tr>
+                        <td colspan="5">Loading schedules…</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="scheduleEmpty" class="empty hidden">No scheduled actions yet.</div>
+        </section>
+        <div id="ec2Feedback" class="feedback hidden"></div>
+    </main>
+    <footer class="footer"><span>CloudLab · Local cloud systems simulator</span><span>Lifecycle · Scheduling ·
+            Timestamp-based billing</span></footer>
+    <script src="app.js"></script>
+</body>
+
+</html>

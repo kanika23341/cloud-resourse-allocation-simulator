@@ -1,72 +1,92 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Availability Zones — CloudLab</title><link rel="stylesheet" href="style.css"></head><body>
-<header class="navbar">
-  <a class="brand" href="index.html">
-    <span class="brand-mark">C</span>
-    <span>CloudLab</span>
-</a>
-  <nav class="nav-links">
-    <a href="index.html" data-nav="dashboard">Dashboard</a>
-    <a href="ec2.html" data-nav="ec2">EC2 Instances</a>
-    <a href="storage.html" data-nav="storage">Storage</a>
-    <a href="load-balancer.html" data-nav="database">Database & Routing</a>
-    <a href="availability-zones.html" data-nav="zones">Availability Zones</a>
-  </nav>
-</header>
+<!doctype html>
+<html lang="en">
 
-<main>
-    <section class="hero">
-        <div class="eyebrow">Resilience layout</div>
-        <h1>Spread the load.<br><span style="color:#e50914">Map the zones.</span></h1>
-        <p>Explore the simulated placement of database shards across availability zones. This demonstrates placement logic; zones are not separate physical data centers.</p>
-    </section>
-<div class="grid" id="zoneMetrics">
-    <article class="metric">
-        <div class="label">Zones</div>
-        <div class="value">—</div>
-    </article>
-    <article class="metric">
-        <div class="label">Shards</div>
-        <div class="value">—</div>
-    </article>
-    <article class="metric">
-        <div class="label">Cache</div>
-        <div class="value">—</div>
-    </article>
-    <article class="metric">
-        <div class="label">Placement</div>
-        <div class="value" style="font-size:1.1rem">Round-robin</div>
-    </article>
-</div>
-<div class="section-head">
-    <div><h2>Zone topology</h2><p>Shard placement is derived from the current database configuration.</p></div>
-    <button class="btn secondary" id="refreshZones">↻ Refresh topology</button>
-</div>
-<section id="zoneGrid" class="grid three">
-    <div class="empty">Loading zones…</div>
-</section>
-<div class="section-head">
-    <div><h2>What this simulation represents</h2></div>
-</div>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Availability Zones — CloudLab</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 
-<section class="grid three">
-    <article class="panel">
-        <h3>Shard distribution</h3>
-        <p class="muted small">Shards are assigned round-robin across the configured zones, keeping the placement deterministic and easy to inspect.</p>
-    </article>
-    <article class="panel">
-        <h3>Health model</h3>
-        <p class="muted small">Zones are marked healthy in this starter. No real failover or independent zone storage is provisioned.</p>
-    </article>
-    <article class="panel">
-        <h3>Cache behavior</h3>
-        <p class="muted small">The cache is a persistent key-value table. Writes invalidate the changed key; repeated reads can hit the cache.</p>
-    </article>
-</section>
-</main>
-<footer class="footer">
-    <span>CloudLab · Zone placement simulator</span>
-    <span>Topology derived from database configuration</span>
-</footer>
-<script src="app.js"></script>
+<body>
+    <header class="navbar">
+        <a class="brand" href="index.html">
+            <span class="brand-mark">C</span>
+            <span>CloudLab</span>
+        </a>
+        <nav class="nav-links">
+            <a href="index.html" data-nav="dashboard">Dashboard</a>
+            <a href="ec2.html" data-nav="ec2">EC2 Instances</a>
+            <a href="storage.html" data-nav="storage">Storage</a>
+            <a href="load-balancer.html" data-nav="database">Database & Routing</a>
+            <a href="availability-zones.html" data-nav="zones">Availability Zones</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="eyebrow">Resilience layout</div>
+            <h1>Spread the load.<br><span style="color:#e50914">Map the zones.</span></h1>
+            <p>Explore the simulated placement of database shards across availability zones. This demonstrates placement
+                logic; zones are not separate physical data centers.</p>
+        </section>
+        <div class="grid" id="zoneMetrics">
+            <article class="metric">
+                <div class="label">Zones</div>
+                <div class="value">—</div>
+            </article>
+            <article class="metric">
+                <div class="label">Shards</div>
+                <div class="value">—</div>
+            </article>
+            <article class="metric">
+                <div class="label">Cache</div>
+                <div class="value">—</div>
+            </article>
+            <article class="metric">
+                <div class="label">Placement</div>
+                <div class="value" style="font-size:1.1rem">Round-robin</div>
+            </article>
+        </div>
+        <div class="section-head">
+            <div>
+                <h2>Zone topology</h2>
+                <p>Shard placement is derived from the current database configuration.</p>
+            </div>
+            <button class="btn secondary" id="refreshZones">↻ Refresh topology</button>
+        </div>
+        <section id="zoneGrid" class="grid three">
+            <div class="empty">Loading zones…</div>
+        </section>
+        <div class="section-head">
+            <div>
+                <h2>What this simulation represents</h2>
+            </div>
+        </div>
+
+        <section class="grid three">
+            <article class="panel">
+                <h3>Shard distribution</h3>
+                <p class="muted small">Shards are assigned round-robin across the configured zones, keeping the
+                    placement deterministic and easy to inspect.</p>
+            </article>
+            <article class="panel">
+                <h3>Health model</h3>
+                <p class="muted small">Zones are marked healthy in this starter. No real failover or independent zone
+                    storage is provisioned.</p>
+            </article>
+            <article class="panel">
+                <h3>Cache behavior</h3>
+                <p class="muted small">The cache is a persistent key-value table. Writes invalidate the changed key;
+                    repeated reads can hit the cache.</p>
+            </article>
+        </section>
+    </main>
+    <footer class="footer">
+        <span>CloudLab · Zone placement simulator</span>
+        <span>Topology derived from database configuration</span>
+    </footer>
+    <script src="app.js"></script>
 </body>
+
 </html>
