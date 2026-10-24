@@ -1,4 +1,4 @@
-const API = "http://127.0.0.1:8000";
+const API = " https://cloud-resourse-allocation-simulator.onrender.com";
 const $ = (id) => document.getElementById(id);
 const money = (n, digits = 2) => "₹" + Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
